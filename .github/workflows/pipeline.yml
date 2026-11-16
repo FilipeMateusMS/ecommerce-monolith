@@ -26,12 +26,12 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build e testes( está certo esse passo?????? )
+      - name: Build e testes
         run: |
           chmod +x mvnw
           ./mvnw clean verify
 
-      - name: Trivy - Dependency Vulnerability Scan
+      - name: Trivy - Scanner para vulnerabilidades em dependências
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: fs
@@ -40,3 +40,18 @@ jobs:
           severity: HIGH,CRITICAL
           ignore-unfixed: true
           exit-code: '0'
+
+# O arquivo .jar já foi gerado no etapa de build nesta etapa irá fazer o upload -> Armazena o .jar no Github Actions
+      - name: Upload arquivo jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: spring-boot-application
+          path: target/*.jar
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Build Docker Image
+        run: |
+          docker build \
+            -t ecommerce-api:${{ github.sha }} \
+            .
