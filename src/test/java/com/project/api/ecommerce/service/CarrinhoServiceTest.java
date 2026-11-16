@@ -58,7 +58,7 @@ class CarrinhoServiceTest {
         PageResponse<CarrinhoResponseDTO> response = service.getCarrinhos(pageable);
 
         assertThat(response).isNotNull();
-        assertEquals(1, response.content().size());
+        assertEquals(1, response.getContent().size());
     }
 
     @Test

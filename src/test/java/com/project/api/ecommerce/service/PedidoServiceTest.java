@@ -88,7 +88,7 @@ class PedidoServiceTest {
 
         PageResponse<PedidoResponseDTO> response = service.getUsuarioPedidos(pageable);
 
-        assertThat(response.content()).hasSize(1);
+        assertThat(response.getContent()).hasSize(1);
     }
 
     @Test

@@ -57,7 +57,7 @@ class UsuarioServiceTest {
 
         PageResponse<UsuarioResponseDTO> response = service.findAllUsuario(pageable);
 
-        assertThat(response.content()).hasSize(1);
+        assertThat(response.getContent()).hasSize(1);
     }
 
     @Test

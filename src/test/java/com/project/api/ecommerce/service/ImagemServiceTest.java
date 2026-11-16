@@ -67,7 +67,7 @@ class ImagemServiceTest {
 
         PageResponse<ImagemResponseDTO> response = service.obterImagensDoProduto(1L, pageable);
 
-        assertThat(response.content() ).hasSize(1);
+        assertThat(response.getContent() ).hasSize(1);
     }
 
     @Test
@@ -83,7 +83,7 @@ class ImagemServiceTest {
 
         PageResponse<ImagemResponseDTO> response = service.obterImagens(pageable);
 
-        assertThat(response.content() ).hasSize(1);
+        assertThat(response.getContent() ).hasSize(1);
     }
 
     @Test

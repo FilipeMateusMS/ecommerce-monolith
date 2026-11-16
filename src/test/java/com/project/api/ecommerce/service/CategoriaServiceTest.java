@@ -71,7 +71,7 @@ class CategoriaServiceTest {
 
         PageResponse<CategoriaResponseDTO> response = service.findAllByContendoNome(null, pageable);
 
-        assertThat(response.content()).hasSize(1);
+        assertThat(response.getContent()).hasSize(1);
     }
 
     @Test
