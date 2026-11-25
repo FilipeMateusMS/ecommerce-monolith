@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   build:
-    name: Build and Tests
+    name: Build, Tests and Docker
     runs-on: ubuntu-latest
 
     steps:
@@ -41,7 +41,7 @@ jobs:
           ignore-unfixed: true
           exit-code: '0'
 
-# O arquivo .jar já foi gerado no etapa de build nesta etapa irá fazer o upload -> Armazena o .jar no Github Actions
+      # Armazena o JAR no GitHub Actions
       - name: Upload arquivo jar
         uses: actions/upload-artifact@v4
         with:
@@ -50,8 +50,41 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-      - name: Build Docker Image
+      - name: Build da imagem Docker
         run: |
           docker build \
             -t ecommerce-api:${{ github.sha }} \
             .
+
+      - name: Trivy - Scanner de vulnerabilidade de imagem Docker
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: image
+          image-ref: ecommerce-api:${{ github.sha }}
+          scanners: vuln
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: '1'
+
+      # Autenticação no Docker Hub
+      - name: Login Docker Hub
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Publicação da imagem
+      - name: Push Docker Hub
+        if: github.event_name == 'push'
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        run: |
+          IMAGE_NAME="$DOCKERHUB_USERNAME/ecommerce-api"
+
+          docker tag ecommerce-api:${{ github.sha }} $IMAGE_NAME:${{ github.sha }}
+          docker tag ecommerce-api:${{ github.sha }} $IMAGE_NAME:latest
+
+          docker push $IMAGE_NAME:${{ github.sha }}
+          docker push $IMAGE_NAME:latest
+
